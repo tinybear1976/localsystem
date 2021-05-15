@@ -1,8 +1,6 @@
 package logger
 
 import (
-	"os"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -49,7 +47,8 @@ func InitLogger(logFilenameWithPath string, loglevel string) *zap.Logger {
 
 	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderConfig),
-		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(&hook)),
+		//zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(&hook)),
+		zapcore.NewMultiWriteSyncer(zapcore.AddSync(&hook)),
 		atomicLevel,
 	)
 
