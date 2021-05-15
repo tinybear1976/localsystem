@@ -1,4 +1,5 @@
-module hhyt/localsystem
+//module hhyt/localsystem
+module github.com/tinybear1976/localsystem
 
 go 1.15
 
