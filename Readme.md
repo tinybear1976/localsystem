@@ -1,0 +1,382 @@
+---
+module: hhyt/localsystem
+function: 简单封装本地文件系统操作、日志操作及其他扩展函数
+version: 0.1.0
+path: hhyt/localsystem@v0.1.2
+---
+
+目录
+
+[TOC]
+
+# 引用
+
+## go.mod
+
+replace 的物理磁盘位置要根据物理目录的实际位置给定。其中 github.com/go-sql-driver/mysql 与 github.com/jmoiron/sqlx  可以在引用hhyt/database/mariadb后，使用go mod  tidy，让系统自动添加
+
+```go
+module mariadbtest
+
+go 1.15
+
+require (
+	hhyt/localsystem v0.1.2
+)
+
+replace hhyt/localsystem => ../../hhyt/localsystem@v0.1.2
+```
+
+## main.go
+
+连接和基本操作。由例可见，数据库连接初始化可以单独进行，并将其连接保存至包内，直到使用Destroy()，手动销毁所有的连接指针。在进行后续的操作时，只需要使用连接标识来表明调用哪个MariaDB连接即可。
+
+```go
+package main
+
+import (
+	"apitemplate/config"
+	routing "apitemplate/routes/v1"
+	"fmt"
+	"hhyt/localsystem"
+	"hhyt/localsystem/logger"
+	"path"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+)
+
+func main() {
+	version := "0.1.0"
+	gin.SetMode(gin.ReleaseMode)
+	p, err := localsystem.CurrentDirectory()
+	if err != nil {
+		logger.Log.Warn("failed to get the current service running path")
+		p = "."
+	}
+
+	logger.Log = logger.InitLogger(path.Join(p, "apitemplate.log"), "")
+	if logger.Log == nil {
+		panic("日志创建失败，程序运行中止。")
+	}
+	config.InitConfig()
+
+	fmt.Printf("apitemplate Api Service [ver:%s] Running...\n", version)
+	var r *gin.Engine
+	r = routing.InitAllRoutes()
+	ip := viper.GetString("test.ip")
+	r.Run(ip)
+
+}
+```
+
+
+
+# 日志
+
+## InitLogger
+
+初始化日志文件。需引用包路径  "hhyt/localsystem/logger"
+
+```go
+func InitLogger(logFilenameWithPath string, loglevel string) *zap.Logger 
+```
+
+入口参数：
+
+| 参数名              | 类型   | 描述                                                         |
+| ------------------- | ------ | ------------------------------------------------------------ |
+| logFilenameWithPath | string | 日志文件的完整文件名（带路径）                               |
+| loglevel            | string | 日志等级，如果传入空字符串，则默认debug：<br>debug<br>info<br>error<br>warn |
+
+返回值：
+
+| 返回变量 | 类型        | 描述                 |
+| -------- | ----------- | -------------------- |
+|          | *zap.Logger | 返回可操作的日志指针 |
+
+示例：
+
+```go
+package main
+
+import (
+	"hhyt/localsystem"
+	"hhyt/localsystem/logger"
+	"path"
+)
+
+func main() {
+	println(localsystem.CurrentDirectory())
+	testlog()
+}
+
+func testlog() {
+	p, _ := localsystem.CurrentDirectory()
+    //返回的日志可操作指针可以保存到临时变量，也可以不保存，
+	logger.InitLogger(path.Join(p, "test.log"), "")
+    //因为包内的Log已经公开，初始化后，可以在需要操作日志的模块中，引用该包，直接调用Log即可
+    logger.Log.Info("test infomation")
+}
+```
+
+
+
+# 扩展函数
+
+## CurrentDirectory
+
+获取当前系统路径，字符串末尾不带 /  。
+
+```go
+func CurrentDirectory() (currentpath string, err error)
+```
+
+入口参数：
+
+无
+
+返回值：
+
+| 返回变量    | 类型   | 描述                                               |
+| ----------- | ------ | -------------------------------------------------- |
+| currentpath | string | 返回当前路径                                       |
+| err         | error  | 如果操作失败，返回异常，一般不会产生错误，可以忽略 |
+
+
+
+## IsDir
+
+测试路径是否为目录。
+
+```go
+func IsDir(path string) bool
+```
+
+入口参数：
+
+| 参数名 | 类型   | 描述               |
+| ------ | ------ | ------------------ |
+| path   | string | 需要进行测试的路径 |
+
+返回值：
+
+| 返回变量 | 类型 | 描述                                      |
+| -------- | ---- | ----------------------------------------- |
+|          | bool | 返回值，true表示为目录，false表示不是目录 |
+
+
+
+## IsFile
+
+测试路径是否为文件。
+
+```go
+func IsFile(path string) bool
+```
+
+入口参数：
+
+| 参数名 | 类型   | 描述               |
+| ------ | ------ | ------------------ |
+| path   | string | 需要进行测试的路径 |
+
+返回值：
+
+| 返回变量 | 类型 | 描述                                      |
+| -------- | ---- | ----------------------------------------- |
+|          | bool | 返回值，true表示为文件，false表示不是文件 |
+
+
+
+## Exists
+
+测试路径是否存在。
+
+```go
+func Exists(path string) bool
+```
+
+入口参数：
+
+| 参数名 | 类型   | 描述               |
+| ------ | ------ | ------------------ |
+| path   | string | 需要进行测试的路径 |
+
+返回值：
+
+| 返回变量 | 类型 | 描述                                  |
+| -------- | ---- | ------------------------------------- |
+|          | bool | 返回值，true表示存在，false表示不存在 |
+
+
+
+## FileNameOnly
+
+测试路径是否存在。
+
+```go
+func FileNameOnly(fullFilename string) string
+```
+
+入口参数：
+
+| 参数名       | 类型   | 描述                     |
+| ------------ | ------ | ------------------------ |
+| fullFilename | string | 原始文件名，可以携带路径 |
+
+返回值：
+
+| 返回变量 | 类型   | 描述                           |
+| -------- | ------ | ------------------------------ |
+|          | string | 返回不带路径与扩展名的主文件名 |
+
+示例：
+
+```go
+	p, _ := localsystem.CurrentDirectory()
+	filename := path.Join(p, "test.log")
+	println(filename)
+    //返回结果为： test
+	println(localsystem.FileNameOnly(filename))
+```
+
+
+
+## CopyFile
+
+复制磁盘文件。
+
+```go
+func CopyFile(src, dst string) (int64, error)
+```
+
+入口参数：
+
+| 参数名 | 类型   | 描述                   |
+| ------ | ------ | ---------------------- |
+| src    | string | 源文件名。可以携带路径 |
+| dst    | string | 目标文件。可以携带路径 |
+
+返回值：
+
+| 返回变量 | 类型  | 描述                          |
+| -------- | ----- | ----------------------------- |
+|          | int64 | 返回复制文件的字节数          |
+|          | error | 如果操作没有发生错误，返回nil |
+
+
+
+## CreateMutiDir
+
+创建多级目录。该操作直接将希望存在的目录结果以路径字符串方式输入，如果操作成功，多级目录将会自动建立出来。对于输入路径中某些级别的目录是否存在，忽略不计。
+
+```go
+func CreateMutiDir(filePath string) error 
+```
+
+入口参数：
+
+| 参数名   | 类型   | 描述             |
+| -------- | ------ | ---------------- |
+| filePath | string | 希望存在的路径。 |
+
+返回值：
+
+| 返回变量 | 类型  | 描述                          |
+| -------- | ----- | ----------------------------- |
+|          | error | 如果操作没有发生错误，返回nil |
+
+
+
+## DiffSecByStr
+
+计算时间差（单位秒）。  公式     t2 -  t1  =时间差秒数（理论应该>0）
+
+```go
+func DiffSecByStr(firsttime string, endtime time.Time) int
+```
+
+入口参数：
+
+| 参数名    | 类型      | 描述                                 |
+| --------- | --------- | ------------------------------------ |
+| firsttime | string    | 计算的第一个时间(t1)，即较早的时间。 |
+| endtime   | time.Time | 计算的第二个时间(t2)，即较早的时间。 |
+
+返回值：
+
+| 返回变量 | 类型 | 描述     |
+| -------- | ---- | -------- |
+|          | int  | 相差秒数 |
+
+
+
+## DiffSecByStrWithFormat
+
+计算时间差（单位秒）。  公式     ts2 -  ts1  =时间差秒数（理论应该>0），用户规定传入的时间格式。ts1与ts2格式应该相同。
+
+```go
+func DiffSecByStrWithFormat(ts1, ts2, formattemp string) int
+```
+
+入口参数：
+
+| 参数名    | 类型      | 描述                                 |
+| --------- | --------- | ------------------------------------ |
+| firsttime | string    | 计算的第一个时间(t1)，即较早的时间。 |
+| endtime   | time.Time | 计算的第二个时间(t2)，即较早的时间。 |
+
+返回值：
+
+| 返回变量 | 类型 | 描述     |
+| -------- | ---- | -------- |
+|          | int  | 相差秒数 |
+
+
+
+## ConcatInStr
+
+通过传入字符串数组，拼接类SQL  IN 条件 字符串。例如：["a","b","c"]  =>  " 'a','b','c' "
+
+```go
+func ConcatInStr(data []string) string
+```
+
+入口参数：
+
+| 参数名 | 类型     | 描述       |
+| ------ | -------- | ---------- |
+| data   | []string | 字符串数组 |
+
+返回值：
+
+| 返回变量 | 类型   | 描述           |
+| -------- | ------ | -------------- |
+|          | string | 拼接结果字符串 |
+
+
+
+## InStrings
+
+检索字符串值（target）是否在字符串数组（str_array）中存在中存在
+
+```go
+func InStrings(target string, str_array []string) bool
+```
+
+入口参数：
+
+| 参数名    | 类型     | 描述                 |
+| --------- | -------- | -------------------- |
+| target    | string   | 被检索值             |
+| str_array | []string | 最大范围的字符串数组 |
+
+返回值：
+
+| 返回变量 | 类型   | 描述           |
+| -------- | ------ | -------------- |
+|          | string | 拼接结果字符串 |
+
+
+
