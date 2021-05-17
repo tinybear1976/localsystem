@@ -39,10 +39,10 @@ func (node *TreeNode) AddChildNode(name, data string) {
 }
 
 // 调试用，可以递归从当前节点向下输出子节点信息
-func (node *TreeNode) DebugPrintAllChilds() {
+func (node *TreeNode) DebugPrintAllChilds(indent int) {
 	for _, n := range node.Childs {
 		fmt.Printf("[L%d]%s  %s\n", (*n).Level, (*n).Id, (*n).Data)
-		n.DebugPrintAllChilds()
+		n.DebugPrintAllChilds(indent + 2)
 	}
 }
 
