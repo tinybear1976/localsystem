@@ -32,7 +32,7 @@ func DiffSecByStrWithFormat(ts1, ts2, formattemp string) int {
 }
 
 //第一时间为字符串，第二时间为字符串，第三个为日期格式，t2-t1=相差秒,第一个时间应该小于第二个时间，如果出现错误返回-1
-func DiffSecByStrWithFormatAndErr(ts1, ts2, formattemp string) (int, error) {
+func DiffSecByStrWithFormatErr(ts1, ts2, formattemp string) (int, error) {
 	t1, err := time.ParseInLocation(formattemp, ts1, time.Local)
 	if err != nil {
 		return -1, err
@@ -51,7 +51,7 @@ func DiffSecByStrWithFormatAndErr(ts1, ts2, formattemp string) (int, error) {
 }
 
 /*seconds为计算秒数,如果为负数，函数会自动现将其调整为正数;
-  模板参数"dd:hh:mm:ss"为全格式，可以逐级减项，"dd:hh:mm" "hh:mm:ss" "hh:mm" "mm:ss"，最少两项
+  模板参数"d:hh:mm:ss"为全格式，可以逐级减项，"d:hh:mm" "hh:mm:ss" "hh:mm" "mm:ss"，最少两项
 */
 func SecondsToString(seconds int, template string) string {
 	if seconds < 0 {
@@ -72,10 +72,10 @@ func SecondsToString(seconds int, template string) string {
 		second = tmp % secondsPerMinute
 	}
 	switch template {
-	case "dd:hh:mm:ss":
-		return fmt.Sprintf("%02d:%02d:%02d:%02d", day, hour, minute, second)
-	case "dd:hh:mm":
-		return fmt.Sprintf("%02d:%02d:%02d", day, hour, minute)
+	case "d:hh:mm:ss":
+		return fmt.Sprintf("%d:%02d:%02d:%02d", day, hour, minute, second)
+	case "d:hh:mm":
+		return fmt.Sprintf("%d:%02d:%02d", day, hour, minute)
 	case "hh:mm:ss":
 		return fmt.Sprintf("%02d:%02d:%02d", hour, minute, second)
 	case "hh:mm":
@@ -98,7 +98,7 @@ func SecondsToStringTimelong(seconds int, template string) string {
 	}
 
 	switch template {
-	case "dd:hh:mm:ss":
+	case "d:hh:mm:ss":
 		var day, hour, minute, second int
 		secondsPerMinute := 60
 		secondsPerHour := secondsPerMinute * 60
@@ -109,9 +109,9 @@ func SecondsToStringTimelong(seconds int, template string) string {
 		tmp = tmp % secondsPerHour
 		minute = tmp / secondsPerMinute
 		second = tmp % secondsPerMinute
-		tmpl := "%0" + strconv.Itoa(intDigitial(day)) + "d:%02d:%02d:%02d"
+		tmpl := "%d:%02d:%02d:%02d"
 		return fmt.Sprintf(tmpl, day, hour, minute, second)
-	case "dd:hh:mm":
+	case "d:hh:mm":
 		var day, hour, minute int
 		secondsPerMinute := 60
 		secondsPerHour := secondsPerMinute * 60
@@ -121,9 +121,9 @@ func SecondsToStringTimelong(seconds int, template string) string {
 		hour = tmp / secondsPerHour
 		tmp = tmp % secondsPerHour
 		minute = tmp / secondsPerMinute
-		tmpl := "%0" + strconv.Itoa(intDigitial(day)) + "d:%02d:%02d"
+		tmpl := "%d:%02d:%02d"
 		return fmt.Sprintf(tmpl, day, hour, minute)
-	case "hh:mm:ss":
+	case "h:mm:ss":
 		var hour, minute, second int
 		secondsPerMinute := 60
 		secondsPerHour := secondsPerMinute * 60
@@ -132,9 +132,9 @@ func SecondsToStringTimelong(seconds int, template string) string {
 		tmp := seconds % secondsPerHour
 		minute = tmp / secondsPerMinute
 		second = tmp % secondsPerMinute
-		tmpl := "%0" + strconv.Itoa(intDigitial(hour)) + "d:%02d:%02d"
+		tmpl := "%d:%02d:%02d"
 		return fmt.Sprintf(tmpl, hour, minute, second)
-	case "hh:mm":
+	case "h:mm":
 		var hour, minute int
 		secondsPerMinute := 60
 		secondsPerHour := secondsPerMinute * 60
@@ -142,22 +142,18 @@ func SecondsToStringTimelong(seconds int, template string) string {
 		hour = seconds / secondsPerHour
 		tmp := seconds % secondsPerHour
 		minute = tmp / secondsPerMinute
-		tmpl := "%0" + strconv.Itoa(intDigitial(hour)) + "d:%02d"
+		tmpl := "%d:%02d"
 		return fmt.Sprintf(tmpl, hour, minute)
-	case "mm:ss":
+	case "m:ss":
 		var minute, second int
 		secondsPerMinute := 60
 
 		minute = seconds / secondsPerMinute
 		second = seconds % secondsPerMinute
-		tmpl := "%0" + strconv.Itoa(intDigitial(minute)) + "d:%02d"
+		tmpl := "%d:%02d"
 		return fmt.Sprintf(tmpl, minute, second)
 	}
 	return ""
-}
-
-func intDigitial(num int) int {
-	return len(strconv.Itoa(num))
 }
 
 //字符串转时间戳，格式字符串，实际时间

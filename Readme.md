@@ -1,8 +1,8 @@
 ---
-module: hhyt/localsystem
+module: github.com/tinybear1976/localsystem
 function: 简单封装本地文件系统操作、日志操作及其他扩展函数
-version: 0.1.0
-path: hhyt/localsystem@v0.1.2
+version: 0.1.5
+lastdatetime: 2021-05-17
 ---
 
 目录
@@ -122,7 +122,7 @@ func testlog() {
 
 
 
-# 扩展函数
+# 文件目录类
 
 ## CurrentDirectory
 
@@ -243,6 +243,28 @@ func FileNameOnly(fullFilename string) string
 
 
 
+## FileNameWithoutPath
+
+返回文件名及扩展名，去除路径。
+
+```go
+func FileNameWithoutPath(fullFilename string) string 
+```
+
+入口参数：
+
+| 参数名       | 类型   | 描述                     |
+| ------------ | ------ | ------------------------ |
+| fullFilename | string | 原始文件名，可以携带路径 |
+
+返回值：
+
+| 返回变量 | 类型   | 描述                         |
+| -------- | ------ | ---------------------------- |
+|          | string | 返回不带路径的 文件名+扩展名 |
+
+
+
 ## CopyFile
 
 复制磁盘文件。
@@ -289,9 +311,11 @@ func CreateMutiDir(filePath string) error
 
 
 
+# 日期时间类
+
 ## DiffSecByStr
 
-计算时间差（单位秒）。  公式     t2 -  t1  =时间差秒数（理论应该>0）
+计算时间差（单位秒）。  公式     t2 -  t1  =时间差秒数（理论应该>0）。第一时间为字符串，第二时间为time，t2-t1=相差秒,第一个时间应该小于第二个时间
 
 ```go
 func DiffSecByStr(firsttime string, endtime time.Time) int
@@ -314,7 +338,7 @@ func DiffSecByStr(firsttime string, endtime time.Time) int
 
 ## DiffSecByStrWithFormat
 
-计算时间差（单位秒）。  公式     ts2 -  ts1  =时间差秒数（理论应该>0），用户规定传入的时间格式。ts1与ts2格式应该相同。
+计算时间差（单位秒）。  公式     ts2 -  ts1  =时间差秒数（理论应该>0），用户规定传入的时间格式。ts1与ts2格式应该相同。第一时间为字符串，第二时间为字符串，第三个为日期格式，t2-t1=相差秒,第一个时间应该小于第二个时间，如果出现错误返回-1
 
 ```go
 func DiffSecByStrWithFormat(ts1, ts2, formattemp string) int
@@ -322,32 +346,144 @@ func DiffSecByStrWithFormat(ts1, ts2, formattemp string) int
 
 入口参数：
 
-| 参数名    | 类型      | 描述                                 |
-| --------- | --------- | ------------------------------------ |
-| firsttime | string    | 计算的第一个时间(t1)，即较早的时间。 |
-| endtime   | time.Time | 计算的第二个时间(t2)，即较早的时间。 |
+| 参数名 | 类型   | 描述                                 |
+| ------ | ------ | ------------------------------------ |
+| ts1    | string | 计算的第一个时间(t1)，即较早的时间。 |
+| ts2    | string | 计算的第二个时间(t2)，即较早的时间。 |
 
 返回值：
 
-| 返回变量 | 类型 | 描述     |
-| -------- | ---- | -------- |
-|          | int  | 相差秒数 |
+| 返回变量 | 类型 | 描述                    |
+| -------- | ---- | ----------------------- |
+|          | int  | 相差秒数,如果错误返回-1 |
 
 
 
-## ConcatInStr
+## DiffSecByStrWithFormatErr
 
-通过传入字符串数组，拼接类SQL  IN 条件 字符串。例如：["a","b","c"]  =>  " 'a','b','c' "
+与DiffSecByStrWithFormat相似，增加返回错误信息
 
 ```go
-func ConcatInStr(data []string) string
+func DiffSecByStrWithFormatErr(ts1, ts2, formattemp string) (int, error)
 ```
 
 入口参数：
 
-| 参数名 | 类型     | 描述       |
-| ------ | -------- | ---------- |
-| data   | []string | 字符串数组 |
+| 参数名 | 类型   | 描述                                 |
+| ------ | ------ | ------------------------------------ |
+| ts1    | string | 计算的第一个时间(t1)，即较早的时间。 |
+| ts2    | string | 计算的第二个时间(t2)，即较早的时间。 |
+
+返回值：
+
+| 返回变量 | 类型  | 描述     |
+| -------- | ----- | -------- |
+|          | int   | 相差秒数 |
+|          | error | 错误信息 |
+
+
+
+## SecondsToString
+
+seconds为需要计算的秒数,如果为负数，函数会自动现将其调整为正数。模板参数"d:hh:mm:ss"为全格式，可以逐级减项，"d:hh:mm" "hh:mm:ss" "hh:mm" "mm:ss"，最少两项。
+
+**功能提示：**该函数只是先将时间计算成 "d:hh:mm:ss"格式，然后按照需要，进行局部格式的裁剪，并且`d`表示为天数，为该整体格式最高单位，所以只能写一个`d`，其余部分最宽两位
+
+```go
+func SecondsToString(seconds int, template string) string
+```
+
+入口参数：
+
+| 参数名   | 类型   | 描述                   |
+| -------- | ------ | ---------------------- |
+| seconds  | int    | 需要计算的秒数         |
+| template | string | 返回字符串的格式模板。 |
+
+返回值：
+
+| 返回变量 | 类型   | 描述         |
+| -------- | ------ | ------------ |
+|          | string | 格式化字符串 |
+
+
+
+## SecondsToStringTimelong
+
+将秒数转换成字符串格式，**指定返回模板的最高位为完整计算数**，可能会超过2位，比如mm:ss则表示所有的描述最大单位以分钟计数。 seconds为计算秒数,如果为负数，函数会自动现将其调整为正数。
+
+模板参数"d:hh:mm:ss"为全格式，可以逐级减项，"d:hh:mm" "h:mm:ss" "h:mm" "m:ss"，最少两项。
+
+如果模板截断最低位ss，结果将忽略秒数部分。
+
+```go
+func SecondsToStringTimelong(seconds int, template string) string
+```
+
+入口参数：
+
+| 参数名   | 类型   | 描述                   |
+| -------- | ------ | ---------------------- |
+| seconds  | int    | 需要计算的秒数         |
+| template | string | 返回字符串的格式模板。 |
+
+返回值：
+
+| 返回变量 | 类型   | 描述         |
+| -------- | ------ | ------------ |
+|          | string | 格式化字符串 |
+
+
+
+## String2Timestamp
+
+将字符串，按照指定布局转换为时间。
+
+```go
+func String2Timestamp(layout, value string) (time.Time, error)
+```
+
+入口参数：
+
+| 参数名 | 类型   | 描述                          |
+| ------ | ------ | ----------------------------- |
+| layout | string | 对应value的时间格式字符串模板 |
+| value  | string | 待转换的时间字符串            |
+
+返回值：
+
+| 返回变量 | 类型      | 描述       |
+| -------- | --------- | ---------- |
+|          | time.Time | 转换的时间 |
+|          | error     | 错误       |
+
+
+
+
+
+
+
+
+
+
+
+# 字符串类
+
+## ConcatStrings
+
+通过传入字符串数组，拼接类SQL  IN 条件 字符串。例如：["a","b","c"]  =>  " 'a','b','c' "
+
+```go
+func ConcatStrings(data []string, separator string, delimiter string) string
+```
+
+入口参数：
+
+| 参数名    | 类型     | 描述                       |
+| --------- | -------- | -------------------------- |
+| data      | []string | 字符串数组                 |
+| separator | string   | 指定间隔符，比如 ,         |
+| delimiter | string   | 每个字符串的定界符，比如 ' |
 
 返回值：
 
@@ -377,6 +513,54 @@ func InStrings(target string, str_array []string) bool
 | 返回变量 | 类型   | 描述           |
 | -------- | ------ | -------------- |
 |          | string | 拼接结果字符串 |
+
+
+
+## GetLastRune
+
+获得指定数量的结尾字符
+
+```go
+func GetLastRune(str string, amount int) string 
+```
+
+入口参数：
+
+| 参数名 | 类型   | 描述                     |
+| ------ | ------ | ------------------------ |
+| str    | string | 被检索字符串             |
+| amount | int    | 需要从右边返回的字符数量 |
+
+返回值：
+
+| 返回变量 | 类型   | 描述       |
+| -------- | ------ | ---------- |
+|          | string | 结果字符串 |
+
+
+
+## RemoveLastRune
+
+获得指定数量的结尾字符
+
+```go
+func RemoveLastRune(str string, amount int) string
+```
+
+入口参数：
+
+| 参数名 | 类型   | 描述                     |
+| ------ | ------ | ------------------------ |
+| str    | string | 原始字符串               |
+| amount | int    | 需要从右边删除的字符数量 |
+
+返回值：
+
+| 返回变量 | 类型   | 描述       |
+| -------- | ------ | ---------- |
+|          | string | 结果字符串 |
+
+
 
 
 
