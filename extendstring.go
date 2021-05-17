@@ -1,6 +1,8 @@
 package localsystem
 
-import "strings"
+import (
+	"strings"
+)
 
 func ConcatInStr(data []string) string {
 	if len(data) <= 0 {
@@ -24,4 +26,12 @@ func InStrings(target string, str_array []string) bool {
 		}
 	}
 	return false
+}
+
+// 获得字符串结尾N个字符
+func GetLastRune(str string, amount int) string {
+	// string -> []rune
+	r := []rune(str)
+	return string(r[len(r)-amount:])
+
 }
