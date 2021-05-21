@@ -11,8 +11,7 @@ type TreeNode struct {
 	ParenNode    *TreeNode
 	Level        int
 	Name         string
-	Data         string
-	Data2        string
+	Data         interface{}
 	Childs       Tree
 	ChildNodeTag int
 }
@@ -22,7 +21,7 @@ func (node *TreeNode) HasChilds() int {
 	return len((*node).Childs)
 }
 
-func (node *TreeNode) AddChildNode(name, data,data2 string) {
+func (node *TreeNode) AddChildNode(name string, data interface{}) {
 	(*node).ChildNodeTag++
 	n := TreeNode{
 		Id:           fmt.Sprintf("%s_%d", (*node).Id, (*node).ChildNodeTag),
@@ -31,7 +30,6 @@ func (node *TreeNode) AddChildNode(name, data,data2 string) {
 		Level:        (*node).Level + 1,
 		Name:         name,
 		Data:         data,
-		Data2:        data2,
 		Childs:       make([]*TreeNode, 0),
 		ChildNodeTag: 0,
 	}
@@ -40,7 +38,7 @@ func (node *TreeNode) AddChildNode(name, data,data2 string) {
 
 func (node *TreeNode) DebugPrintAllChilds(indent int) {
 	for _, n := range node.Childs {
-		fmt.Printf("%s[L%d]%s  %s\n", strings.Repeat(" ", indent), (*n).Level, (*n).Id, (*n).Data)
+		fmt.Printf("%s[L%d]%s  %v\n", strings.Repeat(" ", indent), (*n).Level, (*n).Id, (*n).Data)
 		n.DebugPrintAllChilds(indent + 4)
 	}
 }
@@ -50,10 +48,10 @@ func (node *TreeNode) Parent() TreeNode {
 }
 
 func (node *TreeNode) hasChilds() bool {
-	return len(node.Childs)>0
+	return len(node.Childs) > 0
 }
 
-func NewNode(id, name, data string) TreeNode {
+func NewNode(id, name string, data interface{}) TreeNode {
 	n := TreeNode{
 		Id:           id,
 		ParentId:     "",
@@ -62,7 +60,6 @@ func NewNode(id, name, data string) TreeNode {
 		Level:        1,
 		Name:         name,
 		Data:         data,
-		Data2:        "",
 		Childs:       make([]*TreeNode, 0),
 	}
 	return n
