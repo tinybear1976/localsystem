@@ -28,6 +28,7 @@ func (this *Stack) Pop() (val string, err error) {
 		return
 	}
 	val = this.Data[this.Top]
+	this.Data[this.Top] = ""
 	this.Top--
 	return
 }
