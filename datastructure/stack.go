@@ -51,14 +51,17 @@ func (this *Stack) isEmpty() bool {
 
 func (this *Stack) clear() {
 	this.Top = -1
-	this.Data = this.Data[0:0]
+	for i := 0; i < len(this.Data); i++ {
+		this.Data[i] = ""
+	}
+
 }
 
 func NewStack(capacity int) *Stack {
 	return &Stack{
 		Capacity: capacity,
 		Top:      -1,
-		Data:     make([]string, 5),
+		Data:     make([]string, capacity),
 	}
 }
 
@@ -66,6 +69,6 @@ func NewStackDefaultSize() *Stack {
 	return &Stack{
 		Capacity: 128,
 		Top:      -1,
-		Data:     make([]string, 5),
+		Data:     make([]string, 128),
 	}
 }
