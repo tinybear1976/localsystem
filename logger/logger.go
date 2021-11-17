@@ -6,9 +6,9 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-var Log *zap.Logger
+var LogContainer map[string]*zap.Logger
 
-func InitLogger(logFilenameWithPath string, loglevel string) *zap.Logger {
+func NewLogger(tag, logFilenameWithPath, loglevel string) { //*zap.Logger {
 	hook := lumberjack.Logger{
 		Filename:   logFilenameWithPath,
 		MaxSize:    32,
@@ -54,7 +54,8 @@ func InitLogger(logFilenameWithPath string, loglevel string) *zap.Logger {
 
 	caller := zap.AddCaller()
 	development := zap.Development()
-	Log = zap.New(core, caller, development)
-	Log.Info("Log initialization successful")
-	return Log
+	Log := zap.New(core, caller, development)
+	LogContainer[tag] = Log
+	//Log.Info("Log initialization successful")
+	//return Log
 }
