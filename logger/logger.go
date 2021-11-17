@@ -8,6 +8,10 @@ import (
 
 var LogContainer map[string]*zap.Logger
 
+func init() {
+	LogContainer = make(map[string]*zap.Logger)
+}
+
 func NewLogger(tag, logFilenameWithPath, loglevel string) { //*zap.Logger {
 	hook := lumberjack.Logger{
 		Filename:   logFilenameWithPath,
