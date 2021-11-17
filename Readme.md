@@ -1,8 +1,8 @@
 ---
 module: github.com/tinybear1976/localsystem
 function: 简单封装本地文件系统操作、日志操作及其他扩展函数
-version: 0.2.0
-lastdatetime: 2021-05-19
+version: 0.3.0
+lastdatetime: 2021-11-17
 ---
 
 目录
@@ -79,13 +79,14 @@ func main() {
 初始化日志文件。需引用包路径  "hhyt/localsystem/logger"
 
 ```go
-func InitLogger(logFilenameWithPath string, loglevel string) *zap.Logger 
+func NewLogger(tag string, logFilenameWithPath string, loglevel string) *zap.Logger 
 ```
 
 入口参数：
 
 | 参数名              | 类型   | 描述                                                         |
 | ------------------- | ------ | ------------------------------------------------------------ |
+| tag                 | string | 日志文件的tag，可以指定多个标记以致可以同时存在多个日志logger    |
 | logFilenameWithPath | string | 日志文件的完整文件名（带路径）                               |
 | loglevel            | string | 日志等级，如果传入空字符串，则默认debug：<br>debug<br>info<br>error<br>warn |
 
@@ -114,9 +115,9 @@ func main() {
 func testlog() {
 	p, _ := localsystem.CurrentDirectory()
     //返回的日志可操作指针可以保存到临时变量，也可以不保存，
-	logger.InitLogger(path.Join(p, "test.log"), "")
+	logger.NewLogger("log1",path.Join(p, "test.log"), "")
     //因为包内的Log已经公开，初始化后，可以在需要操作日志的模块中，引用该包，直接调用Log即可
-    logger.Log.Info("test infomation")
+    logger.LogContainer["log1"].Info("test infomation")
 }
 ```
 
