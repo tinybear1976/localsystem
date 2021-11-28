@@ -1,6 +1,7 @@
 package localsystem
 
 import (
+	"strconv"
 	"strings"
 )
 
@@ -13,6 +14,23 @@ func ConcatStrings(data []string, separator string, delimiter string) string {
 	var sb strings.Builder
 	for i := 0; i < len(data); i++ {
 		tmp := separator + delimiter + data[i] + delimiter
+		sb.WriteString(tmp)
+	}
+	if len(sb.String()) < 2 {
+		return ""
+	}
+	return sb.String()[1:]
+}
+
+// 将整数切片连接成字符串。
+// data  字符串数组, separator 间隔符(一般为,), delimiter 定界符（如果不需要可以为空字符串）
+func ConcatStringFromInts(data []int, separator string, delimiter string) string {
+	if len(data) <= 0 {
+		return ""
+	}
+	var sb strings.Builder
+	for i := 0; i < len(data); i++ {
+		tmp := separator + delimiter + strconv.Itoa(data[i]) + delimiter
 		sb.WriteString(tmp)
 	}
 	if len(sb.String()) < 2 {
