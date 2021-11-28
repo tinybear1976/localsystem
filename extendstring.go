@@ -23,7 +23,7 @@ func ConcatStrings(data []string, separator string, delimiter string) string {
 }
 
 // 将整数切片连接成字符串。
-// data  字符串数组, separator 间隔符(一般为,), delimiter 定界符（如果不需要可以为空字符串）
+// data  int数组, separator 间隔符(一般为,), delimiter 定界符（如果不需要可以为空字符串）
 func ConcatStringFromInts(data []int, separator string, delimiter string) string {
 	if len(data) <= 0 {
 		return ""
