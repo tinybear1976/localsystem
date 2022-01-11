@@ -34,23 +34,23 @@ func Exists(path string) bool {
 
 //仅返回主文件名（不包含扩展名）
 func FileNameOnly(fullFilename string) string {
-	var filenameWithSuffix string
-	filenameWithSuffix = filepath.Base(fullFilename)
-	var fileSuffix string
-	fileSuffix = filepath.Ext(filenameWithSuffix)
-	var filenameOnly string
-	filenameOnly = strings.TrimSuffix(filenameWithSuffix, fileSuffix)
+	//var filenameWithSuffix string
+	filenameWithSuffix := filepath.Base(fullFilename)
+	//var fileSuffix string
+	fileSuffix := filepath.Ext(filenameWithSuffix)
+	//var filenameOnly string
+	filenameOnly := strings.TrimSuffix(filenameWithSuffix, fileSuffix)
 	return filenameOnly
 }
 
 // 返回主文件名(不包含路径) 与 扩展名。第一个返回是主文件名,第二返回是扩展名
 func FileNameSplit(fullFilename string) (string, string) {
-	var filenameWithSuffix string
-	filenameWithSuffix = filepath.Base(fullFilename)
-	var fileSuffix string
-	fileSuffix = filepath.Ext(filenameWithSuffix)
-	var filenameOnly string
-	filenameOnly = strings.TrimSuffix(filenameWithSuffix, fileSuffix)
+	//var filenameWithSuffix string
+	filenameWithSuffix := filepath.Base(fullFilename)
+	//var fileSuffix string
+	fileSuffix := filepath.Ext(filenameWithSuffix)
+	//var filenameOnly string
+	filenameOnly := strings.TrimSuffix(filenameWithSuffix, fileSuffix)
 	return filenameOnly, fileSuffix
 }
 

@@ -64,3 +64,8 @@ func RemoveLastRune(str string, amount int) string {
 	return string(r[:len(r)-amount])
 
 }
+
+// float64转换成字符串
+func Float64toString(f64 float64) string {
+	return strconv.FormatFloat(f64, 'f', -1, 64)
+}
