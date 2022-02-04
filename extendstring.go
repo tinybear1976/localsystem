@@ -51,18 +51,20 @@ func InStrings(target string, str_array []string) bool {
 
 // 获得字符串结尾N个字符
 func GetLastRune(str string, amount int) string {
-	// string -> []rune
 	r := []rune(str)
-	return string(r[len(r)-amount:])
-
+	if len(r) >= amount {
+		return string(r[len(r)-amount:])
+	}
+	return str
 }
 
 // 移除字符串结尾N个字符
 func RemoveLastRune(str string, amount int) string {
-	// string -> []rune
 	r := []rune(str)
-	return string(r[:len(r)-amount])
-
+	if len(r) >= amount {
+		return string(r[:len(r)-amount])
+	}
+	return ""
 }
 
 // float64转换成字符串

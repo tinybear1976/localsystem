@@ -13,64 +13,9 @@ lastdatetime: 2021-11-17
 
 ## go.mod
 
-replace 的物理磁盘位置要根据物理目录的实际位置给定。其中 github.com/go-sql-driver/mysql 与 github.com/jmoiron/sqlx  可以在引用hhyt/database/mariadb后，使用go mod  tidy，让系统自动添加
-
 ```go
-module mariadbtest
-
 go 1.15
-
-require (
-	hhyt/localsystem v0.1.2
-)
-
-replace hhyt/localsystem => ../../hhyt/localsystem@v0.1.2
 ```
-
-## main.go
-
-连接和基本操作。由例可见，数据库连接初始化可以单独进行，并将其连接保存至包内，直到使用Destroy()，手动销毁所有的连接指针。在进行后续的操作时，只需要使用连接标识来表明调用哪个MariaDB连接即可。
-
-```go
-package main
-
-import (
-	"apitemplate/config"
-	routing "apitemplate/routes/v1"
-	"fmt"
-	"hhyt/localsystem"
-	"hhyt/localsystem/logger"
-	"path"
-
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
-)
-
-func main() {
-	version := "0.1.0"
-	gin.SetMode(gin.ReleaseMode)
-	p, err := localsystem.CurrentDirectory()
-	if err != nil {
-		logger.Log.Warn("failed to get the current service running path")
-		p = "."
-	}
-
-	logger.Log = logger.InitLogger(path.Join(p, "apitemplate.log"), "")
-	if logger.Log == nil {
-		panic("日志创建失败，程序运行中止。")
-	}
-	config.InitConfig()
-
-	fmt.Printf("apitemplate Api Service [ver:%s] Running...\n", version)
-	var r *gin.Engine
-	r = routing.InitAllRoutes()
-	ip := viper.GetString("test.ip")
-	r.Run(ip)
-
-}
-```
-
-
 
 # 日志
 
@@ -79,7 +24,7 @@ func main() {
 初始化日志文件。需引用包路径  "hhyt/localsystem/logger"
 
 ```go
-func NewLogger(tag string, logFilenameWithPath string, loglevel string) *zap.Logger 
+func NewLogger(tag string, logFilenameWithPath string, loglevel string) 
 ```
 
 入口参数：
@@ -92,9 +37,7 @@ func NewLogger(tag string, logFilenameWithPath string, loglevel string) *zap.Log
 
 返回值：
 
-| 返回变量 | 类型        | 描述                 |
-| -------- | ----------- | -------------------- |
-|          | *zap.Logger | 返回可操作的日志指针 |
+无（通过  logger.LogContainer["标签名"] 访问）
 
 示例：
 
@@ -458,16 +401,6 @@ func String2Timestamp(layout, value string) (time.Time, error)
 |          | time.Time | 转换的时间 |
 |          | error     | 错误       |
 
-
-
-
-
-
-
-
-
-
-
 # 字符串类
 
 ## ConcatStrings
@@ -561,7 +494,33 @@ func RemoveLastRune(str string, amount int) string
 | -------- | ------ | ---------- |
 |          | string | 结果字符串 |
 
+## Float64toString
 
+float64转换成字符串
 
+```go
+func Float64toString(f64 float64) string
+```
 
+# 算法
+
+## 归并排序
+
+### int
+
+```go
+// package:  localsystem.algorithm
+data := IntSlice_MergeSort([]int{2, 3, 1})
+// Sort方法传入true 升序排列，如果传入false降序排列
+got := data.Sort(true)
+```
+
+### float64
+
+```go
+// package:  localsystem.algorithm
+data := Float64Slice_MergeSort([]float64{2.2, 30.3, 1})
+// Sort方法传入true 升序排列，如果传入false降序排列
+got := data.Sort(true)
+```
 
