@@ -23,13 +23,9 @@ func IsFile(path string) bool {
 func Exists(path string) bool {
 	_, err := os.Stat(path)
 	if err != nil {
-		if os.IsExist(err) {
-			return true
-		}
-		return false
+		return os.IsExist(err)
 	}
 	return true
-
 }
 
 //仅返回主文件名（不包含扩展名）

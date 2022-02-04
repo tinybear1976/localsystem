@@ -1,8 +1,8 @@
 ---
 module: github.com/tinybear1976/localsystem
 function: 简单封装本地文件系统操作、日志操作及其他扩展函数
-version: 0.3.0
-lastdatetime: 2021-11-17
+version: 0.12.0
+lastdatetime: 2022-02-04
 ---
 
 目录
