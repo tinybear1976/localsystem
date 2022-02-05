@@ -524,3 +524,83 @@ data := Float64Slice_MergeSort([]float64{2.2, 30.3, 1})
 got := data.Sort(true)
 ```
 
+# 数据结构
+
+## Set4String
+
+为字符串设计的集合
+
+包路径：`localsystem/datastructure/set`
+
+### New
+
+根据一个字符串切片创建一个字符串集合
+
+```go
+func New(strSlice []string) Set4String 
+```
+
+### Intersection
+
+求两（或多个）个字符串集合的交集。字符串集合方法
+
+```go
+func (set1 Set4String) Intersection(sets ...Set4String) Set4String 
+```
+
+### Compare
+
+比较两个集合是否所有元素一致
+
+```go
+func (set1 Set4String) Compare(set2 Set4String) bool
+```
+
+### Union
+
+多个集合合并（并集）
+
+```go
+func (set1 Set4String) Union(sets ...Set4String) (Set4String, error) 
+```
+
+### IsExist
+
+检查1个或多个字符串在集合中是否存。有一个不存在就返回false，全部存在返回true。如果入参没有传入任何内容，返回false。如果指定的集合没有任何内容返回false。
+
+```go
+func (set1 Set4String) IsExist(keys ...string) bool 
+```
+
+### Categorizing
+
+将给定的字符串按照在集合中出现、未出现进行分检返回。如果被检索集合（set1）不包含任何元素，则传入检索项全部返回non_exist。如果没有传入参数，则返回的 exist, non_exist分别都为空集合
+
+```go
+func (set1 Set4String) Categorizing(keys ...string) (exist, non_exist Set4String)
+```
+
+### ToStringSlice
+
+将集合转为字符串切片
+
+```go
+func (set1 Set4String) ToStringSlice() []string 
+```
+
+### Add
+
+增加元素到集合
+
+```go
+func (set1 Set4String) Add(keys ...string)
+```
+
+### Remove
+
+从集合中移除指定key
+
+```go
+func (set1 Set4String) Remove(keys ...string)
+```
+
