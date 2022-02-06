@@ -5,21 +5,19 @@ import (
 	"encoding/gob"
 )
 
-type Empty struct{}
-
-type Set4String map[string]Empty
+type Set4Int map[int]Empty
 
 // 通过字符串切片创建字符串集合
-func New_SetString(strSlice []string) Set4String {
-	m := Set4String{}
-	for _, s := range strSlice {
-		m[s] = Empty{}
+func New_SetInt(intSlice []int) Set4Int {
+	m := Set4Int{}
+	for _, i := range intSlice {
+		m[i] = Empty{}
 	}
 	return m
 }
 
 // 比较两个集合是否元素一致
-func (set1 Set4String) Compare(set2 Set4String) bool {
+func (set1 Set4Int) Compare(set2 Set4Int) bool {
 	// 元素数量不同
 	set1Len := len(set1)
 	if set1Len != len(set2) {
@@ -34,8 +32,8 @@ func (set1 Set4String) Compare(set2 Set4String) bool {
 }
 
 // 两个或多个集合交集
-func (set1 Set4String) Intersection(sets ...Set4String) Set4String {
-	res := Set4String{}
+func (set1 Set4Int) Intersection(sets ...Set4Int) Set4Int {
+	res := Set4Int{}
 	for k := range set1 {
 		res[k] = Empty{}
 	}
@@ -56,11 +54,11 @@ func (set1 Set4String) Intersection(sets ...Set4String) Set4String {
 }
 
 // 两个或多个集合并集
-func (set1 Set4String) Union(sets ...Set4String) (Set4String, error) {
-	res := Set4String{}
+func (set1 Set4Int) Union(sets ...Set4Int) (Set4Int, error) {
+	res := Set4Int{}
 	// 暂时忽略错误
 	if len(set1) > 0 {
-		err := deepCopy_string(&res, set1)
+		err := deepCopy_int(&res, set1)
 		if err != nil {
 			return res, err
 		}
@@ -76,7 +74,7 @@ func (set1 Set4String) Union(sets ...Set4String) (Set4String, error) {
 // 检查1个或多个字符串在集合中是否存在，只有有一个不符合就返回false，全部存在返回true。
 // 如果入参没有传入任何内容，返回false
 // 如果指定的集合没有任何内容返回false
-func (set1 Set4String) IsExist(keys ...string) bool {
+func (set1 Set4Int) IsExist(keys ...int) bool {
 	if len(set1) == 0 {
 		return false
 	}
@@ -94,14 +92,14 @@ func (set1 Set4String) IsExist(keys ...string) bool {
 // 将给定的字符串按照在集合中出现、未出现进行分检返回
 // 如果被检索集合不包含任何元素，则传入检索项全部返回non_exist
 // 如果没有传入参数，则返回的 exist, non_exist分别都为空集合
-func (set1 Set4String) Categorizing(keys ...string) (exist, non_exist Set4String) {
-	exist = Set4String{}
-	non_exist = Set4String{}
+func (set1 Set4Int) Categorizing(keys ...int) (exist, non_exist Set4Int) {
+	exist = Set4Int{}
+	non_exist = Set4Int{}
 	if len(keys) == 0 {
 		return
 	}
 	if len(set1) == 0 {
-		non_exist = New_SetString(keys)
+		non_exist = New_SetInt(keys)
 		return
 	}
 	for _, k := range keys {
@@ -115,8 +113,8 @@ func (set1 Set4String) Categorizing(keys ...string) (exist, non_exist Set4String
 }
 
 // 将集合转为字符串切片
-func (set1 Set4String) ToSlice() []string {
-	res := make([]string, 0)
+func (set1 Set4Int) ToSlice() []int {
+	res := make([]int, 0)
 	for k := range set1 {
 		res = append(res, k)
 	}
@@ -124,20 +122,20 @@ func (set1 Set4String) ToSlice() []string {
 }
 
 // 将字符串加入集合
-func (set1 Set4String) Add(keys ...string) {
+func (set1 Set4Int) Add(keys ...int) {
 	for _, s := range keys {
 		set1[s] = Empty{}
 	}
 }
 
 // 从集合中移除指定key
-func (set1 Set4String) Remove(keys ...string) {
+func (set1 Set4Int) Remove(keys ...int) {
 	for _, s := range keys {
 		delete(set1, s)
 	}
 }
 
-func deepCopy_string(pdst *Set4String, src Set4String) error {
+func deepCopy_int(pdst *Set4Int, src Set4Int) error {
 	var buf bytes.Buffer
 	if err := gob.NewEncoder(&buf).Encode(src); err != nil {
 		return err

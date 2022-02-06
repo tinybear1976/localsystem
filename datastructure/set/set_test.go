@@ -46,7 +46,7 @@ func Test_String_New(t *testing.T) {
 	for _, item := range tests_ok {
 		t.Run(item.name, func(t *testing.T) {
 
-			got := New(item.input)
+			got := New_SetString(item.input)
 			if !reflect.DeepEqual(got, item.want) {
 				t.Errorf("%v => %v , want %v", item.input, got, item.want)
 			}
@@ -340,8 +340,7 @@ func Test_String_ToStringSlice(t *testing.T) {
 	}
 	for _, item := range tests_ok {
 		t.Run(item.name, func(t *testing.T) {
-			got := item.set1.ToStringSlice()
-
+			got := item.set1.ToSlice()
 			if item.want_len != len(got) {
 				t.Errorf("(input: len%d) %v => (got len: %d) %v , (want) %v", item.want_len, item.set1, len(got), got, item.want)
 			}
